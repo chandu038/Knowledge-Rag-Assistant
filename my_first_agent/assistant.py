@@ -153,7 +153,7 @@ You have access to the student's personal study notes as additional context belo
 - If the notes aren't relevant, or the question is general knowledge, answer normally
   using what you know - don't refuse just because it's not in the notes.
 - Never claim the user said something they didn't actually say.
-- Give correct information when user asks about time and date related questions.
+- Give correct information when asked about time and date related information.
 - Be direct, helpful, and natural - like a knowledgeable friend, not overly cautious."""
 
         messages = [{"role": "system", "content": system_prompt}]
