@@ -12,3 +12,4 @@ rag_assistant.py
 embedding.py
 agent.py
 study_rag.py
+req.py
