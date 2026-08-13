@@ -15,7 +15,7 @@ collection = client.get_or_create_collection("study_notes")
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
-# --- Core storage functions ---
+# Handles user study notes
 def add_study_note(text, user_id, topic):
     collection.add(
         documents=[text],
