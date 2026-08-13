@@ -23,6 +23,7 @@ def add_study_note(text, user_id, topic):
         ids=[str(uuid.uuid4())]
     )
 
+#Helps to get current date and time
 
 def get_current_date():
     """Get today's actual real date."""
