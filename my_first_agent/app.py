@@ -100,7 +100,7 @@ for msg in st.session_state.chat_history:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
         if msg.get("sources"):
-            with st.expander("📎 Sources used"):
+            with st.expander("🔗 Sources used"):
                 for s in msg["sources"]:
                     st.caption(s[:150] + "...")
 
@@ -117,7 +117,7 @@ if question:
             answer, sources = assistant.ask(question)
         st.write(answer)
         if sources:
-            with st.expander("📎 Sources used"):
+            with st.expander("🔗 Sources used"):
                 for s in sources:
                     st.caption(s[:150] + "...")
 
