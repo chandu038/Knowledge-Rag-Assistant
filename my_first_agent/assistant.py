@@ -29,6 +29,7 @@ def get_current_date():
     """Get today's actual real date."""
     return datetime.now().strftime("%B %d, %Y")
 
+#Helps to search notes based on user query and user id
 
 def search_notes(query, user_id, n_results=3):
     results = collection.query(
