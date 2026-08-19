@@ -1,3 +1,4 @@
+from typing import final
 import chromadb
 from groq import Groq
 import os
@@ -156,10 +157,16 @@ class KnowledgeAssistant:
 You have access to the student's personal study notes as additional context below.
 - If the notes are relevant to the question, use them and mention "(from your notes)".
 - If the notes aren't relevant, or the question is general knowledge, answer normally
-  using what you know - don't refuse just because it's not in the notes.
+  using what you know — don't refuse just because it's not in the notes.
 - Never claim the user said something they didn't actually say.
 - Give correct information when asked about time and date related information.
-- Don't show ur thinking process to the user ; if you don't know, say so honestly instead of guessing. Be careful and cautios"""
+- Be careful and cautious.
+CRITICAL OUTPUT RULE:
+- Do NOT include a <think> block, chain-of-thought, or any internal reasoning in your output.
+- Do NOT use tags like <think>, [thinking], or similar in your response under any circumstances.
+- Respond with ONLY the final answer text, directly, with no preamble about your reasoning process.
+- If you catch yourself about to write out reasoning steps, discard them and just give the final answer."""
+
         messages = [{"role": "system", "content": system_prompt}]
         messages.extend(self.conversation_history)
         messages.append({"role": "user", "content": f"Notes context:\n{context}\n\nQuestion: {question}"})
