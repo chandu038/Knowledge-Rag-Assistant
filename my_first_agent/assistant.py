@@ -6,6 +6,8 @@ from datetime import date, datetime
 from dotenv import load_dotenv
 import PyPDF2
 from docx import Document
+import re
+
 
 load_dotenv()
 
@@ -38,6 +40,9 @@ def search_notes(query, user_id, n_results=3):
         where={"user": user_id}
     )
     return results["documents"][0] if results["documents"] else []
+
+def strip_thinking(text: str) -> str:
+    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
 
 
 def list_my_notes(user_id):
@@ -163,6 +168,7 @@ You have access to the student's personal study notes as additional context belo
 
         response = groq_client.chat.completions.create(
             model="qwen/qwen3.6-27b",
+            extra_body={"chat_template_kwargs": {"enable_thinking": False}},
             messages=messages,
             temperature=0.3
         )
