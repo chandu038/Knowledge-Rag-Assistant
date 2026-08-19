@@ -173,9 +173,9 @@ CRITICAL OUTPUT RULE:
 
         response = groq_client.chat.completions.create(
             model="qwen/qwen3.6-27b",
-            extra_body={"chat_template_kwargs": {"enable_thinking": False}},
             messages=messages,
-            temperature=0.3
+            temperature=0.3,
+            extra_body={"chat_template_kwargs": {"enable_thinking": False}}
         )
         answer = response.choices[0].message.content
 
