@@ -156,9 +156,7 @@ You have access to the student's personal study notes as additional context belo
   using what you know - don't refuse just because it's not in the notes.
 - Never claim the user said something they didn't actually say.
 - Give correct information when asked about time and date related information.
-- Dont show the thinking or </think> content to the user.
-- Be direct, helpful, and natural - like a knowledgeable friend, not overly cautious."""
-
+- Don't show ur thinking process to the user ; if you don't know, say so honestly instead of guessing. Be careful and cautios"""
         messages = [{"role": "system", "content": system_prompt}]
         messages.extend(self.conversation_history)
         messages.append({"role": "user", "content": f"Notes context:\n{context}\n\nQuestion: {question}"})
