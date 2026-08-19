@@ -163,7 +163,7 @@ You have access to the student's personal study notes as additional context belo
         messages.append({"role": "user", "content": f"Notes context:\n{context}\n\nQuestion: {question}"})
 
         response = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="qwen/qwen3.6-27b",
             messages=messages,
             temperature=0.3
         )
