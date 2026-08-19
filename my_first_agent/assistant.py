@@ -2,6 +2,7 @@ from typing import final
 import chromadb
 from groq import Groq
 import os
+import re
 import uuid
 from datetime import date, datetime
 from dotenv import load_dotenv
@@ -25,14 +26,14 @@ def add_study_note(text, user_id, topic):
         ids=[str(uuid.uuid4())]
     )
 
-#Helps to get current date and time
 
+# Helps to get current date and time
 def get_current_date():
     """Get today's actual real date."""
     return datetime.now().strftime("%B %d, %Y")
 
-#Helps to search notes based on user query and user id
 
+# Helps to search notes based on user query and user id
 def search_notes(query, user_id, n_results=3):
     results = collection.query(
         query_texts=[query],
@@ -40,8 +41,6 @@ def search_notes(query, user_id, n_results=3):
         where={"user": user_id}
     )
     return results["documents"][0] if results["documents"] else []
-
-
 
 
 def list_my_notes(user_id):
@@ -124,6 +123,15 @@ def add_file_notes(filepath, user_id, topic):
     return len(chunks)
 
 
+# --- Helper: strip any leaked <think> blocks as a safety net ---
+def strip_thinking(text):
+    """Remove any <think>...</think> blocks that might leak through, just in case."""
+    if not text:
+        return text
+    cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
+    return cleaned.strip()
+
+
 # --- The assistant, with memory ---
 class KnowledgeAssistant:
     def __init__(self, user_id):
@@ -161,23 +169,29 @@ You have access to the student's personal study notes as additional context belo
 - Never claim the user said something they didn't actually say.
 - Give correct information when asked about time and date related information.
 - Be careful and cautious.
-CRITICAL OUTPUT RULE:
-- Do NOT include a <think> block, chain-of-thought, or any internal reasoning in your output.
-- Do NOT use tags like <think>, [thinking], or similar in your response under any circumstances.
-- Respond with ONLY the final answer text, directly, with no preamble about your reasoning process.
-- If you catch yourself about to write out reasoning steps, discard them and just give the final answer."""
+- Respond with ONLY the final answer text. Do not include any reasoning, planning,
+  or <think> blocks in your response."""
 
         messages = [{"role": "system", "content": system_prompt}]
         messages.extend(self.conversation_history)
         messages.append({"role": "user", "content": f"Notes context:\n{context}\n\nQuestion: {question}"})
 
-        response = groq_client.chat.completions.create(
-            model="qwen/qwen3.6-27b",
-            messages=messages,
-            temperature=0.3,
-            extra_body={"chat_template_kwargs": {"enable_thinking": False}}
-        )
-        answer = response.choices[0].message.content
+        try:
+            response = groq_client.chat.completions.create(
+                model="qwen/qwen3.6-27b",
+                messages=messages,
+                temperature=0.3,
+                reasoning_format="hidden"  # tells Groq to hide the model's internal reasoning
+            )
+            raw_answer = response.choices[0].message.content
+            answer = strip_thinking(raw_answer)  # safety net in case anything leaks through
+
+            if not answer:
+                answer = "Sorry, I couldn't generate a response for that. Could you try rephrasing?"
+
+        except Exception as e:
+            print(f"Groq API error: {e}")  # goes to your logs, not shown to the user
+            answer = "Sorry, I ran into an issue answering that. Please try again in a moment."
 
         self.conversation_history.append({"role": "user", "content": question})
         self.conversation_history.append({"role": "assistant", "content": answer})
